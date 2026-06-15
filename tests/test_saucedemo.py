@@ -1,21 +1,18 @@
-from utils.helpers import login
+import pytest
+from pages.login_page import Login_Page
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-
-
-def test_login( driver ):
-     login(driver, "standard_user", "secret_sauce")
-
-     assert "inventory.html" in driver.current_url 
-
-     title = driver.find_element(By.CLASS_NAME,"title").text
-     assert title == "Products"
+@pytest.fixture(autouse=True)
+def login(driver):
+    """Realiza el login antes de cada test de inventario."""
+    login_page = Login_Page(driver)
+    login_page.open()
+    login_page.login("standard_user", "secret_sauce")
 
 def test_catalogo_productos( driver ):
-     login(driver, "standard_user", "secret_sauce")
-
+  
      assert "inventory.html" in driver.current_url 
      
      title = driver.find_element(By.CLASS_NAME,"title").text
@@ -32,7 +29,6 @@ def test_catalogo_productos( driver ):
      assert len(btm) > 0
 
 def test_verificar_barra_menu ( driver ):
-     login (driver, "standard_user", "secret_sauce")
      wait = WebDriverWait (driver, 10)
 
      #Apreto el botón
@@ -44,7 +40,7 @@ def test_verificar_barra_menu ( driver ):
      assert dentro == "All Items" or "About" or "Logout" or "Reset App State"
 
 def test_agregar_al_carrito( driver ):
-     login (driver, "standard_user", "secret_sauce")
+     
      wait = WebDriverWait (driver, 10)
 
      #Agrego el producto 
@@ -67,7 +63,6 @@ def test_agregar_al_carrito( driver ):
      assert product_carrito == product_name
 
 def test_verificar_boton_remove_de_un_producto( driver ):
-     login (driver, "standard_user", "secret_sauce")
      wait = WebDriverWait (driver, 10)   #Agrego el producto 
      btn_add = wait.until(EC.element_to_be_clickable((By.ID,"add-to-cart-sauce-labs-bike-light")))
      btn_add.click()
